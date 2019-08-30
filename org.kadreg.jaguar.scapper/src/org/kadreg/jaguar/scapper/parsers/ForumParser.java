@@ -18,13 +18,13 @@ public class ForumParser extends AbstractParser {
 
 	public ForumParser(String url) throws IOException {
 		base = url;
-		doc = getConnection(url).get();
+		doc = getDocument(url);
 	}
 
 	public ForumParser(String base2, String href, String padding2) throws IOException {
 		base = base2;
-		doc = getConnection(base2 + href).get();
-		padding = padding2 + "    ";
+		doc = getDocument(base2 + href);
+		padding = padding2;
 	}
 
 	public void parse() throws IOException {
@@ -48,11 +48,25 @@ public class ForumParser extends AbstractParser {
 
 			parseTopic(href, topicName);
 		}
+		// page suivante ?
+		try {
+		String suivant = getSuivantLink(doc);
+		if (suivant != null) {
+			try {
+				ForumParser parser = new ForumParser(base, suivant, padding);
+				parser.parse();
+			} catch (HttpStatusException e) {
+				System.err.println(e.getMessage());
+			}			
+		}
+		} catch (BadScrappingException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void parseTopic(String href, String topicName) throws IOException {
 		try {
-			TopicParser parser = new TopicParser(base, href, padding);
+			TopicParser parser = new TopicParser(base, href, padding + "    ");
 			parser.parse();
 		} catch (HttpStatusException e) {
 			System.err.println(e.getMessage());
@@ -61,7 +75,7 @@ public class ForumParser extends AbstractParser {
 
 	private void parseSubForum(String href) throws IOException {
 		try {
-			ForumParser parser = new ForumParser(base, href, padding);
+			ForumParser parser = new ForumParser(base, href, padding + "    ");
 			parser.parse();
 		} catch (HttpStatusException e) {
 			System.err.println(e.getMessage());
