@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.naming.OperationNotSupportedException;
+
+import org.jsoup.nodes.Document;
+
 public class AuthorParser extends AbstractParser {
 
 	private static AuthorParser instance;
@@ -12,8 +16,13 @@ public class AuthorParser extends AbstractParser {
 
 	@Override
 	public void parse() throws IOException {
-		// TODO Auto-generated method stub
+		throw new IOException(new OperationNotSupportedException());
+	}
 
+	
+	public void parse(String authorHref) throws IOException {
+		Document doc = getDocument(authorHref);
+		
 	}
 
 	public static AuthorParser getInstance() {
@@ -27,6 +36,12 @@ public class AuthorParser extends AbstractParser {
 		if (users.get(author) == null) {
 			// parsing de l'auteur
 			users.put(author, authorHref);
+			try {
+				parse (authorHref);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 	}

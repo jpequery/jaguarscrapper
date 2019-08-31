@@ -35,7 +35,7 @@ public class TopicParser extends AbstractParser {
 			String content = post.select("d.content").text();
 			String date = post.select("p.author").text();
 			
-			AuthorParser.getInstance().author (author, authorHref);
+			AuthorParser.getInstance().author (author, base + authorHref);
 //			System.out.println(padding + "  post de " + author);
 		}
 ;

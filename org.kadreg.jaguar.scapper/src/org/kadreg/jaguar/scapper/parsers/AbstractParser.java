@@ -1,6 +1,8 @@
 package org.kadreg.jaguar.scapper.parsers;
 
 import java.io.IOException;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +15,7 @@ import org.jsoup.select.Elements;
 
 public abstract class AbstractParser {
 	static Map<String,String> cookiesMap = new HashMap<String, String>();
+	private static java.sql.Connection _jdbcConnection;
 	
 	static {
 //		cookiesMap.put("phpbb3_hwrqg_k", "XXXXXXXXXXXXXXXX");
@@ -25,6 +28,19 @@ public abstract class AbstractParser {
 	
 	private Connection getConnection (String url) {
 		return Jsoup.connect(url).userAgent("Mozilla/ jsoup").cookies (cookiesMap);
+	}
+	
+	public static java.sql.Connection getJDBCConnection () {
+		if (_jdbcConnection == null) {
+			try {
+				_jdbcConnection = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
+					                                   "user=minty&password=greatsqldb");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return _jdbcConnection;
 	}
 	
 	protected Document getDocument (String url) {
