@@ -7,12 +7,12 @@ TODO:
 - détecter les images dans les posts, et extraire les images pour les ré-héberger
 - detecter les smileys pour reconstruire la base de smiley
 - construire les requetes d'injections de données dans le nouveau forum
-- gérer correctement les paramètres dans un fichier ini
 - remettre des dates utilisables, pas de hier, remettre les années 2019
 - gestion des groupes, reconstruire la liste des membres de l'asso
 
 
 DONE:
+- gérer correctement les paramètres dans un fichier ini
 - installer un forum pour test (pb mysql actuellement)
 - parcours du forum, des sous forums et de tous les topics, y compris les multipages
 - gestion du login (récupérer les id de sessions avec chrome)
