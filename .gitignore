@@ -1,6 +1,5 @@
 bin/
 target/
 *.class/
-*.acceleo
 scrap.properties
 
