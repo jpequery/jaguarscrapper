@@ -1,6 +1,7 @@
 package org.kadreg.jaguar.scapper.parsers;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class AuthorParser extends AbstractParser {
 	
 	public void parse(String authorHref) throws IOException {
 		Document doc = getDocument(authorHref);
+		Connection jdbc = getJDBCConnection();
 		
 	}
 
@@ -31,6 +33,8 @@ public class AuthorParser extends AbstractParser {
 		}
 		return instance;
 	}
+	
+	
 
 	public void author(String author, String authorHref) {
 		if (users.get(author) == null) {

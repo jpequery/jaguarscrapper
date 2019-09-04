@@ -16,12 +16,17 @@ import org.jsoup.select.Elements;
 public abstract class AbstractParser {
 	static Map<String,String> cookiesMap = new HashMap<String, String>();
 	private static java.sql.Connection _jdbcConnection;
+
+	private static String DATABASE_NAME = ConfigManager.getInstance().getDatabase();
+	private static final String MYSQL_SERVER = ConfigManager.getInstance().getServer ();
+	private static final String DATABASE_USER=ConfigManager.getInstance().getUser();
+	private static final String DATABASE_PWD=ConfigManager.getInstance().getPassword();
+	
 	
 	static {
-//		cookiesMap.put("phpbb3_hwrqg_k", "XXXXXXXXXXXXXXXX");
-//		cookiesMap.put("phpbb3_hwrqg_sid", "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-//		cookiesMap.put("phpbb3_hwrqg_u", "ZZZZ");
-		
+		cookiesMap.put("phpbb3_hwrqg_k", ConfigManager.getInstance().getK());
+		cookiesMap.put("phpbb3_hwrqg_sid", ConfigManager.getInstance().getSid());
+		cookiesMap.put("phpbb3_hwrqg_u", ConfigManager.getInstance().getU());		
 	}
 
 	public abstract void parse () throws IOException;
@@ -33,8 +38,8 @@ public abstract class AbstractParser {
 	public static java.sql.Connection getJDBCConnection () {
 		if (_jdbcConnection == null) {
 			try {
-				_jdbcConnection = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
-					                                   "user=minty&password=greatsqldb");
+				_jdbcConnection = DriverManager.getConnection("jdbc:mysql://" + MYSQL_SERVER + "/"+DATABASE_NAME+"?" +
+					                                   "user="+DATABASE_USER+"&password="+DATABASE_PWD+"&serverTimezone=UTC");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
