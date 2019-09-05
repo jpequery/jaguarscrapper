@@ -9,7 +9,7 @@ public class JaguarScrapper {
 
 	public static void main(String[] args) {
 		LocalTime start = LocalTime.now();
-
+ 
 		try {			
 			ForumParser parser = new ForumParser ("http://passion-jaguar.forumprod.com/");
 			parser.parse();
