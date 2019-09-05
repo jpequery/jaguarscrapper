@@ -7,7 +7,13 @@ TODO:
 - détecter les images dans les posts, et extraire les images pour les ré-héberger
 - detecter les smileys pour reconstruire la base de smiley
 - construire les requetes d'injections de données dans le nouveau forum
-- remettre des dates utilisables, pas de hier, remettre les années 2019
+     - forum
+     - topic
+     - post
+     - user
+     - smiley
+     - group
+- remettre des dates utilisables, pas de hier, remettre les années 2019 (en cours)
 - gestion des groupes, reconstruire la liste des membres de l'asso
 
 
@@ -22,3 +28,5 @@ DONE:
 
 
 Note technique sur la connection à distance : https://stackoverflow.com/questions/1559955/host-xxx-xx-xxx-xxx-is-not-allowed-to-connect-to-this-mysql-server
+
+Explication des tables phpBB : https://ftp.phpbb-fr.com/cdd/phpbb2/charlie/tables/index.html
