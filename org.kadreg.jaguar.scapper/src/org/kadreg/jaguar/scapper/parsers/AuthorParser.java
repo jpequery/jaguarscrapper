@@ -11,6 +11,12 @@ import org.jsoup.nodes.Document;
 
 public class AuthorParser extends AbstractParser {
 
+	public AuthorParser() {
+		super(null); // the author parser never have a parent
+	}
+
+
+
 	private static AuthorParser instance;
 	
 	private Map<String, Object> users = new HashMap<String, Object>();  

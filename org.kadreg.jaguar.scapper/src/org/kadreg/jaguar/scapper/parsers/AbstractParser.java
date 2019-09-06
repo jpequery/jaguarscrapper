@@ -14,6 +14,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public abstract class AbstractParser {
+	protected AbstractParser parentParser; 
+	
 	static Map<String,String> cookiesMap = new HashMap<String, String>();
 	private static java.sql.Connection _jdbcConnection;
 
@@ -31,6 +33,10 @@ public abstract class AbstractParser {
 
 	public abstract void parse () throws IOException;
 	
+	public AbstractParser (AbstractParser parent) {
+		parentParser = parent;
+	}
+	
 	private Connection getConnection (String url) {
 		return Jsoup.connect(url).userAgent("Mozilla/ jsoup").cookies (cookiesMap);
 	}
@@ -41,7 +47,6 @@ public abstract class AbstractParser {
 				_jdbcConnection = DriverManager.getConnection("jdbc:mysql://" + MYSQL_SERVER + "/"+DATABASE_NAME+"?" +
 					                                   "user="+DATABASE_USER+"&password="+DATABASE_PWD+"&serverTimezone=UTC");
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

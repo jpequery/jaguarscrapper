@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
@@ -19,7 +18,8 @@ public class TopicParser extends AbstractParser {
 
 	private final SimpleDateFormat format = new SimpleDateFormat ("dd MMM YYYY, hh:mm");
 	
-	public TopicParser(String base, String href, String padding) throws IOException {
+	public TopicParser(AbstractParser parent, String base, String href, String padding) throws IOException {
+		super (parent);
 		this.base = base;
 		doc = getDocument(base + href);
 		this.padding = padding;
@@ -57,7 +57,7 @@ public class TopicParser extends AbstractParser {
 			String suivant = getSuivantLink(doc);
 			if (suivant != null) {
 				try {
-					TopicParser parser = new TopicParser(base, suivant, padding);
+					TopicParser parser = new TopicParser(parentParser, base, suivant, padding);
 					parser.parse();
 				} catch (HttpStatusException e) {
 					System.err.println(e.getMessage());
@@ -82,7 +82,8 @@ public class TopicParser extends AbstractParser {
 			date = today.getDayOfMonth() +" "+ today.getMonth().toString() +" "+ today.getYear() + date.substring(date.indexOf(','));
 		}
 		
-		return format.parse(date);
+//		return format.parse(date);
+		return null;
 	}
 
 }
