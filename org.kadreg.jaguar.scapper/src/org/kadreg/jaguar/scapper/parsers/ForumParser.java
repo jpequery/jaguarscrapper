@@ -1,6 +1,9 @@
 package org.kadreg.jaguar.scapper.parsers;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
@@ -34,18 +37,40 @@ public class ForumParser extends AbstractParser {
 		doc = getDocument(base2 + href);
 		padding = padding2;
 	}
+	
+	public void convert () {
+		String id = getForumId ();
+		String forumName= doc.title();
+		System.out.println(padding + forumName);
+		int parentId = 0;
+		if (parentParser != null) {
+			ForumParser parent = (ForumParser) parentParser;
+			parentId = Integer.valueOf(parent.getForumId());
+		}
+
+		try {
+			Connection connect = getJDBCConnection();
+			PreparedStatement statement = connect.prepareStatement("INSERT INTO phpbb_forums (forum_id, parent_id, forum_name, forum_parents, forum_desc, forum_rules) "
+					+ "VALUES (?, ?, ?, ?, ?, ?)");
+			statement.setInt(1, Integer.valueOf(id));
+			statement.setInt(2, parentId);
+			statement.setString(3, forumName);
+			statement.setString(4, "");
+			statement.setString(5, ""); //description
+			statement.setString(6, ""); // rules
+			boolean res = statement.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public void parse() throws IOException {
-		String id = getForumId ();
+		convert();
 		Elements forumALinkElement = doc.select("a.forumtitle");
 		for (org.jsoup.nodes.Element element : forumALinkElement) {
 			String href = element.attr("href");
 			String forumName = element.text();
-			if (href.indexOf('?') != -1) {
-				System.out.println(padding + forumName + " " + href.substring(0, href.indexOf('?')));
-			} else {
-				System.out.println(padding + forumName + " " + href);
-			}
 			parseSubForum(href);
 		}
 
@@ -62,7 +87,7 @@ public class ForumParser extends AbstractParser {
 		String suivant = getSuivantLink(doc);
 		if (suivant != null) {
 			try {
-				ForumParser parser = new ForumParser(this, base, suivant, padding);
+				ForumParser parser = new ForumParser(parentParser, base, suivant, padding);
 				parser.parse();
 			} catch (HttpStatusException e) {
 				System.err.println(e.getMessage());

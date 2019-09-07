@@ -3,6 +3,7 @@ package org.kadreg.jaguar.scapper;
 import java.time.Duration;
 import java.time.LocalTime;
 
+import org.kadreg.jaguar.scapper.parsers.Cleaner;
 import org.kadreg.jaguar.scapper.parsers.ForumParser;
 
 public class JaguarScrapper {
@@ -10,7 +11,10 @@ public class JaguarScrapper {
 	public static void main(String[] args) {
 		LocalTime start = LocalTime.now();
  
-		try {			
+		try {
+			Cleaner cleaner = new Cleaner ();
+			cleaner.parse();
+			
 			ForumParser parser = new ForumParser ("http://passion-jaguar.forumprod.com/");
 			parser.parse();
 		} catch (Exception e) {
