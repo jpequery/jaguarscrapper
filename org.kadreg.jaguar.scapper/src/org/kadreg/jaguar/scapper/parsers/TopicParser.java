@@ -1,6 +1,7 @@
 package org.kadreg.jaguar.scapper.parsers;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -42,6 +43,7 @@ public class TopicParser extends AbstractParser {
 				String authorHref = post.select("p.author a").attr("href");
 				String content = post.select("d.content").text();
 				String date = post.select("p.author").text();
+				date = date.substring(date.indexOf('»') + 2);
 				java.util.Date sqlDate = normalizeDate (date);
 
 				AuthorParser.getInstance().author (author, base + authorHref);
@@ -67,23 +69,6 @@ public class TopicParser extends AbstractParser {
 			e.printStackTrace();
 		}
 		
-	}
-
-	private java.util.Date normalizeDate(String date) throws ParseException {
-		LocalDate today = LocalDate.now();
-		LocalDate yesterday = today.minusDays(1);
-		
-		
-		
-		if (date.startsWith("Hier")) {
-			date = yesterday.getDayOfMonth() +" "+ yesterday.getMonth().toString() +" "+ yesterday.getYear() + date.substring(date.indexOf(','));
-			
-		} else if (date.startsWith("Aujourd'hui")) {
-			date = today.getDayOfMonth() +" "+ today.getMonth().toString() +" "+ today.getYear() + date.substring(date.indexOf(','));
-		}
-		
-//		return format.parse(date);
-		return null;
 	}
 
 }

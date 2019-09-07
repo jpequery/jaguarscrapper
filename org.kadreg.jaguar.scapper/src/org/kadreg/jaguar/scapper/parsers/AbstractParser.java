@@ -3,6 +3,9 @@ package org.kadreg.jaguar.scapper.parsers;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,4 +88,48 @@ public abstract class AbstractParser {
 			return null;
 		}
 	}
+	
+	protected java.util.Date normalizeDate(String date) throws ParseException {
+		try {
+		LocalDate today = LocalDate.now();
+		LocalDate yesterday = today.minusDays(1);
+		int indexDeuxPoint = date.indexOf(':');
+		int minutes = Integer.valueOf(date.substring(indexDeuxPoint+1));
+		int heures = Integer.valueOf(date.substring(indexDeuxPoint-2, indexDeuxPoint));
+		
+		
+		if (date.startsWith("Hier")) {
+			Timestamp result = new Timestamp(yesterday.getYear(), yesterday.getMonthValue(), yesterday.getDayOfMonth(), heures, minutes, 0, 0);
+			return new java.sql.Date (result.toInstant().getEpochSecond());
+		} else if (date.startsWith("Aujourd'hui")) {
+			Timestamp result = new Timestamp(today.getYear(), today.getMonthValue(), today.getDayOfMonth(), heures, minutes, 0, 0);
+			return new java.sql.Date (result.toInstant().getEpochSecond());
+		}
+		
+		int day = Integer.valueOf(date.substring(0, 2));
+		int month = getMonthNumber (date.substring(3, 7));
+		int year = Integer.valueOf(date.substring(7+(month==6||month==7?1:0), 11+(month==6||month==7?1:0)));
+		Timestamp result = new Timestamp(year, month, day, heures, minutes, 0, 0);
+		return new java.sql.Date (result.toInstant().getEpochSecond());
+		} catch (NumberFormatException e) {
+			throw e;
+		}
+	}
+
+	private int getMonthNumber(String s) {
+		if (s.startsWith("Jan")) return 1;
+		if (s.startsWith("Fév")) return 2;
+		if (s.startsWith("Mar")) return 3;
+		if (s.startsWith("Avr")) return 4;
+		if (s.startsWith("Mai")) return 5;
+		if (s.startsWith("Juin")) return 6;
+		if (s.startsWith("Juil")) return 7;
+		if (s.startsWith("Aoû")) return 8;
+		if (s.startsWith("Sep")) return 9;
+		if (s.startsWith("Oct")) return 10;
+		if (s.startsWith("Nov")) return 11;
+		if (s.startsWith("Déc")) return 12;
+		throw new RuntimeException("Unknown month "+ s);
+	}
+
 }
