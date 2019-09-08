@@ -1,6 +1,10 @@
 package org.kadreg.jaguar.scapper.parsers;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,20 +22,23 @@ public class TopicParser extends AbstractParser {
 	private String padding;
 
 	private final SimpleDateFormat format = new SimpleDateFormat ("dd MMM YYYY, hh:mm");
+	private boolean firstPage;
 	
-	public TopicParser(AbstractParser parent, String base, String href, String padding) throws IOException {
+	public TopicParser(AbstractParser parent, String base, String href, String padding, boolean firstPage) throws IOException {
 		super (parent);
 		this.base = base;
 		doc = getDocument(base + href);
 		this.padding = padding;
+		this.firstPage = firstPage;
 	}
 
 	@Override
 	public void parse() throws IOException {
 		if (doc == null) return; // problème de document invalide
-		String topicName = doc.select ("h3.first a").text();
 		
-		System.out.println(padding + "topic : " + topicName);
+		
+		if (firstPage) convert ();
+		
 		// <div class="postbody">
 		//     <p class="author">
 		//     <div class="content">
@@ -59,7 +66,7 @@ public class TopicParser extends AbstractParser {
 			String suivant = getSuivantLink(doc);
 			if (suivant != null) {
 				try {
-					TopicParser parser = new TopicParser(parentParser, base, suivant, padding);
+					TopicParser parser = new TopicParser(parentParser, base, suivant, padding, false);
 					parser.parse();
 				} catch (HttpStatusException e) {
 					System.err.println(e.getMessage());
@@ -69,6 +76,41 @@ public class TopicParser extends AbstractParser {
 			e.printStackTrace();
 		}
 		
+	}
+
+	private void convert() {
+		String topicName = doc.select ("h3.first a").text();
+		System.out.println(padding + "topic : " + topicName);
+
+		
+		ForumParser forumParser = (ForumParser) parentParser;
+		int topicId = getTopicId ();
+		
+		int topicPoster = 0;
+		Date topicDate = new Date (0);
+		
+		try {
+			Connection connect = getJDBCConnection();
+			PreparedStatement statement = connect.prepareStatement("INSERT INTO phpbb_topics (forum_id, topic_id, topic_title, topic_poster, topic_time) "
+					+ "VALUES (?, ?, ?, ?, ?)");
+			statement.setInt(1, Integer.valueOf(forumParser.getForumId()));
+			statement.setInt(2, topicId);
+			statement.setString(3, topicName);
+			statement.setInt(4, topicPoster);
+			statement.setInt(5, 0);
+			statement.execute();
+			
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private int getTopicId() {
+		Elements elements = doc.select("form#forum-search input");
+		for (Element element : elements) {
+			if (element.attr("type").equals("hidden")) return Integer.valueOf(element.attr("value"));
+		}
+		return 0;
 	}
 
 }

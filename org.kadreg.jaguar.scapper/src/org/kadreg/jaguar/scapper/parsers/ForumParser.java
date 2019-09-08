@@ -15,10 +15,12 @@ public class ForumParser extends AbstractParser {
 	// the document of the parsed page
 	private Document doc;
 
-	// the baseURI of the site being pparsed
+	// the baseURI of the site being parsed
 	private String base;
 
 	private String padding = "";
+
+	private boolean firstPage;
 
 	/**
 	 * Entry point forum parser, for root forums
@@ -31,11 +33,12 @@ public class ForumParser extends AbstractParser {
 		doc = getDocument(url);
 	}
 
-	public ForumParser(AbstractParser parent, String base2, String href, String padding2) throws IOException {
+	public ForumParser(AbstractParser parent, String base2, String href, String padding2, boolean firstPage) throws IOException {
 		super (parent);
 		base = base2;
 		doc = getDocument(base2 + href);
 		padding = padding2;
+		this.firstPage = firstPage;
 	}
 	
 	public void convert () {
@@ -66,7 +69,7 @@ public class ForumParser extends AbstractParser {
 	}
 
 	public void parse() throws IOException {
-		convert();
+		if (firstPage) convert();
 		Elements forumALinkElement = doc.select("a.forumtitle");
 		for (org.jsoup.nodes.Element element : forumALinkElement) {
 			String href = element.attr("href");
@@ -87,7 +90,7 @@ public class ForumParser extends AbstractParser {
 		String suivant = getSuivantLink(doc);
 		if (suivant != null) {
 			try {
-				ForumParser parser = new ForumParser(parentParser, base, suivant, padding);
+				ForumParser parser = new ForumParser(parentParser, base, suivant, padding, false);
 				parser.parse();
 			} catch (HttpStatusException e) {
 				System.err.println(e.getMessage());
@@ -98,7 +101,7 @@ public class ForumParser extends AbstractParser {
 		}
 	}
 
-	private String getForumId() {
+	public String getForumId() {
 		Elements options = doc.select("form#jumpbox option");
 		for (Element option : options) {
 			if (option.hasAttr("selected")) {
@@ -110,7 +113,7 @@ public class ForumParser extends AbstractParser {
 
 	private void parseTopic(String href, String topicName) throws IOException {
 		try {
-			TopicParser parser = new TopicParser(this, base, href, padding + "    ");
+			TopicParser parser = new TopicParser(this, base, href, padding + "    ", true);
 			parser.parse();
 		} catch (HttpStatusException e) {
 			System.err.println(e.getMessage());
@@ -119,7 +122,7 @@ public class ForumParser extends AbstractParser {
 
 	private void parseSubForum(String href) throws IOException {
 		try {
-			ForumParser parser = new ForumParser(this, base, href, padding + "    ");
+			ForumParser parser = new ForumParser(this, base, href, padding + "    ", true);
 			parser.parse();
 		} catch (HttpStatusException e) {
 			System.err.println(e.getMessage());

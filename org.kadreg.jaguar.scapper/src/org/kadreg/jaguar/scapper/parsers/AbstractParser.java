@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,6 +96,13 @@ public abstract class AbstractParser {
 		LocalDate today = LocalDate.now();
 		LocalDate yesterday = today.minusDays(1);
 		int indexDeuxPoint = date.indexOf(':');
+		
+		if (date.startsWith("il y a ")) {
+			int num = Integer.valueOf(date.substring(7, 9));
+			LocalDate t = today.minus(num, ChronoUnit.MINUTES);
+			return new java.sql.Date (t.toEpochDay());
+		}
+		
 		int minutes = Integer.valueOf(date.substring(indexDeuxPoint+1));
 		int heures = Integer.valueOf(date.substring(indexDeuxPoint-2, indexDeuxPoint));
 		
@@ -101,7 +110,7 @@ public abstract class AbstractParser {
 		if (date.startsWith("Hier")) {
 			Timestamp result = new Timestamp(yesterday.getYear(), yesterday.getMonthValue(), yesterday.getDayOfMonth(), heures, minutes, 0, 0);
 			return new java.sql.Date (result.toInstant().getEpochSecond());
-		} else if (date.startsWith("Aujourd'hui")) {
+		} else if (date.startsWith("Aujourd’hui")) { // mauvais apostrophe :/
 			Timestamp result = new Timestamp(today.getYear(), today.getMonthValue(), today.getDayOfMonth(), heures, minutes, 0, 0);
 			return new java.sql.Date (result.toInstant().getEpochSecond());
 		}
