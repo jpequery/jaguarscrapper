@@ -7,17 +7,17 @@ TODO:
 - détecter les images dans les posts, et extraire les images pour les ré-héberger
 - detecter les smileys pour reconstruire la base de smiley
 - construire les requetes d'injections de données dans le nouveau forum
-     - forum
+     - forum 
      - topic
      - post
      - user
      - smiley
      - group
-- remettre des dates utilisables, pas de hier, remettre les années 2019 (en cours)
 - gestion des groupes, reconstruire la liste des membres de l'asso
 
 
 DONE:
+- remettre des dates utilisables, pas de hier, remettre les années 2019 (a optimiser)
 - gérer correctement les paramètres dans un fichier ini
 - installer un forum pour test (pb mysql actuellement)
 - parcours du forum, des sous forums et de tous les topics, y compris les multipages
@@ -31,9 +31,5 @@ Note technique sur la connection à distance : https://stackoverflow.com/questio
 
 Explication des tables phpBB : https://ftp.phpbb-fr.com/cdd/phpbb2/charlie/tables/index.html (ancienne version2...)
 
-Pour faire apparaitre le forum : forum_type à 1, forum_flags à 48.
+Pour faire apparaitre le forum : forum_type à 1, forum_flags à 48 (ok pour la racine). Voir avec les ACL.
 
-Exemple code stocké :
-<r><B><s>[b]</s>bonjour<e>[/b]</e></B><br/>
-<br/>
-<IMG src="https://cdn.iconscout.com/icon/free/png-256/jaguar-3-202816.png"><s>[img]</s><URL url="https://cdn.iconscout.com/icon/free/png-256/jaguar-3-202816.png"><LINK_TEXT text="https://cdn.iconscout.com/icon/free/png ... 202816.png">https://cdn.iconscout.com/icon/free/png-256/jaguar-3-202816.png</LINK_TEXT></URL><e>[/img]</e></IMG></r>
