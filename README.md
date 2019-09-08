@@ -32,3 +32,8 @@ Note technique sur la connection à distance : https://stackoverflow.com/questio
 Explication des tables phpBB : https://ftp.phpbb-fr.com/cdd/phpbb2/charlie/tables/index.html (ancienne version2...)
 
 Pour faire apparaitre le forum : forum_type à 1, forum_flags à 48.
+
+Exemple code stocké :
+<r><B><s>[b]</s>bonjour<e>[/b]</e></B><br/>
+<br/>
+<IMG src="https://cdn.iconscout.com/icon/free/png-256/jaguar-3-202816.png"><s>[img]</s><URL url="https://cdn.iconscout.com/icon/free/png-256/jaguar-3-202816.png"><LINK_TEXT text="https://cdn.iconscout.com/icon/free/png ... 202816.png">https://cdn.iconscout.com/icon/free/png-256/jaguar-3-202816.png</LINK_TEXT></URL><e>[/img]</e></IMG></r>
