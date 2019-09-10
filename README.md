@@ -7,9 +7,9 @@ TODO:
 - détecter les images dans les posts, et extraire les images pour les ré-héberger
 - detecter les smileys pour reconstruire la base de smiley
 - construire les requetes d'injections de données dans le nouveau forum
-     - forum 
-     - topic
-     - post
+     - forum  (partial, manque ACL)
+     - topic (partial)
+     - post (partial)
      - user
      - smiley
      - group
