@@ -33,3 +33,4 @@ Explication des tables phpBB : https://ftp.phpbb-fr.com/cdd/phpbb2/charlie/table
 
 Pour faire apparaitre le forum : forum_type à 1, forum_flags à 48 (ok pour la racine). Voir avec les ACL.
 
+![etat actuel](https://i.imgur.com/dL7h277.png "etat actuel")
