@@ -5,10 +5,8 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 
 import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
@@ -44,22 +42,7 @@ public class TopicParser extends AbstractParser {
 		//     <div class="content">
 		Elements posts = doc.select ("div.postBody");
 		for (Element post : posts) {
-			
-			try {
-				String author = post.select("p.author a").text();
-				String authorHref = post.select("p.author a").attr("href");
-				String content = post.select("d.content").text();
-				String date = post.select("p.author").text();
-				date = date.substring(date.indexOf('»') + 2);
-				java.util.Date sqlDate = normalizeDate (date);
-
-				AuthorParser.getInstance().author (author, base + authorHref);
-//				System.out.println(padding + "  post de " + author);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
+			convertPost (post);			
 		}
 ;
 		try {
@@ -76,6 +59,39 @@ public class TopicParser extends AbstractParser {
 			e.printStackTrace();
 		}
 		
+	}
+
+
+	private void convertPost(Element post) {
+		try {
+			String author = post.select("p.author a").text();
+			String authorHref = post.select("p.author a").attr("href");
+			String content = post.select("div.content").html();
+			String date = post.select("p.author").text();
+			String postTitle = post.select("h3.first").text();
+			date = date.substring(date.indexOf('»') + 2);
+			java.util.Date sqlDate = normalizeDate (date);
+			int authorId = AuthorParser.getInstance().author (author, base + authorHref);
+			int postId = Integer.valueOf(post.parent().parent().attr("id").substring(1)); // id du post, suppression d'un p devant
+			Connection jdbc = getJDBCConnection();
+			PreparedStatement statement = jdbc.prepareStatement("INSERT INTO phpbb_posts(post_id, topic_id, forum_id, poster_id, post_time, post_subject, post_text) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?)");
+			statement.setInt(1, postId);
+			statement.setInt(2 , getTopicId());
+			statement.setInt(3, ((ForumParser)parentParser).getForumId());
+			statement.setInt(4, authorId);
+			statement.setLong(5, 0);
+			statement.setString(6, postTitle);
+			statement.setString(7, content); 
+	
+			statement.execute();
+//			System.out.println(padding + "  post de " + author);
+		} catch (SQLException e) {
+			e.printStackTrace();			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void convert() {

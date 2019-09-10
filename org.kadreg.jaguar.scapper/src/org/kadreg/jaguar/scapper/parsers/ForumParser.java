@@ -42,20 +42,20 @@ public class ForumParser extends AbstractParser {
 	}
 	
 	public void convert () {
-		String id = getForumId ();
+		int id = getForumId ();
 		String forumName= doc.title();
 		System.out.println(padding + forumName);
 		int parentId = 0;
 		if (parentParser != null) {
 			ForumParser parent = (ForumParser) parentParser;
-			parentId = Integer.valueOf(parent.getForumId());
+			parentId = parent.getForumId();
 		}
 
 		try {
 			Connection connect = getJDBCConnection();
-			PreparedStatement statement = connect.prepareStatement("INSERT INTO phpbb_forums (forum_id, parent_id, forum_name, forum_parents, forum_desc, forum_rules) "
-					+ "VALUES (?, ?, ?, ?, ?, ?)");
-			statement.setInt(1, Integer.valueOf(id));
+			PreparedStatement statement = connect.prepareStatement("INSERT INTO phpbb_forums (forum_id, parent_id, forum_name, forum_parents, forum_desc, forum_rules, forum_type, forum_flags) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, 1, 48)");
+			statement.setInt(1, id);
 			statement.setInt(2, parentId);
 			statement.setString(3, forumName);
 			statement.setString(4, "");
@@ -101,14 +101,14 @@ public class ForumParser extends AbstractParser {
 		}
 	}
 
-	public String getForumId() {
+	public int getForumId() {
 		Elements options = doc.select("form#jumpbox option");
 		for (Element option : options) {
 			if (option.hasAttr("selected")) {
-				return option.attr("value");
+				return Integer.valueOf(option.attr("value"));
 			}
 		}
-		return "0";
+		return 0;
 	}
 
 	private void parseTopic(String href, String topicName) throws IOException {

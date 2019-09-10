@@ -15,7 +15,28 @@ public class JaguarScrapper {
 			Cleaner cleaner = new Cleaner ();
 			cleaner.parse();
 			
-			ForumParser parser = new ForumParser ("http://passion-jaguar.forumprod.com/");
+
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		ForumParser parser = new ForumParser ("http://passion-jaguar.forumprod.com/");
 			parser.parse();
 		} catch (Exception e) {
 			e.printStackTrace();

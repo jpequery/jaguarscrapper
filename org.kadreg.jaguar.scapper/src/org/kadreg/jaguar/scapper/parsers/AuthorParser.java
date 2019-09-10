@@ -21,7 +21,7 @@ public class AuthorParser extends AbstractParser {
 
 	private static AuthorParser instance;
 	
-	private Map<String, Object> users = new HashMap<String, Object>();  
+	private Map<String, Integer> users = new HashMap<String, Integer>();  
 
 	@Override
 	public void parse() throws IOException {
@@ -29,7 +29,7 @@ public class AuthorParser extends AbstractParser {
 	}
 
 	
-	public void parse (String username, String authorHref) throws IOException {
+	public int parse (String username, String authorHref) throws IOException {
 		Document doc = getDocument(authorHref);
 		
 		Connection jdbc = getJDBCConnection();
@@ -46,7 +46,7 @@ public class AuthorParser extends AbstractParser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		return 0;
 	}
 
 	public static AuthorParser getInstance() {
@@ -58,18 +58,18 @@ public class AuthorParser extends AbstractParser {
 	
 	
 
-	public void author(String author, String authorHref) {
+	public int author(String author, String authorHref) {
 		if (users.get(author) == null) {
 			// parsing de l'auteur
-			users.put(author, authorHref);
 			try {
 				parse (author, authorHref);
+				users.put(author, 0);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
+		return users.get(author);
 	}
 
 }
