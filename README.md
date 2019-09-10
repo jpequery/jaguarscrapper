@@ -7,10 +7,10 @@ TODO:
 - détecter les images dans les posts, et extraire les images pour les ré-héberger
 - detecter les smileys pour reconstruire la base de smiley
 - construire les requetes d'injections de données dans le nouveau forum
-     - forum  (partial, manque ACL)
+     - forum  (partial, manque ACL, table phpbb_acl_groups)
      - topic (partial)
      - post (partial)
-     - user
+     - user (ils sont reconnus, mais manque l'injection du user_id)
      - smiley
      - group
 - gestion des groupes, reconstruire la liste des membres de l'asso
