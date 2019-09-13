@@ -30,6 +30,7 @@ DONE:
 Note technique sur la connection à distance : https://stackoverflow.com/questions/1559955/host-xxx-xx-xxx-xxx-is-not-allowed-to-connect-to-this-mysql-server
 
 Explication des tables phpBB : https://ftp.phpbb-fr.com/cdd/phpbb2/charlie/tables/index.html (ancienne version2...)
+verrsion 3.0 : https://ftp.phpbb-fr.com/cdd/phpbb3/_screens/doc_table/?table=phpbb_users
 
 Pour faire apparaitre le forum : forum_type à 1, forum_flags à 48 (ok pour la racine). Voir avec les ACL.
 
