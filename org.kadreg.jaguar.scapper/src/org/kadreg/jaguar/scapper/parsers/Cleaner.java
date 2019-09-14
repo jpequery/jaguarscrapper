@@ -25,6 +25,8 @@ public class Cleaner extends AbstractParser {
 			statement.addBatch ("DELETE FROM phpbb_forums WHERE phpbb_forums.forum_id > 1");
 			statement.addBatch ("DELETE FROM phpbb_topics");
 			statement.addBatch ("DELETE FROM phpbb_posts");
+			statement.addBatch ("DELETE FROM phpbb_acl_groups");
+			
 			statement.executeBatch();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

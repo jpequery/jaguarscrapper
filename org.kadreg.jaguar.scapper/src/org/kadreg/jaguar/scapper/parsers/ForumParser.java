@@ -62,6 +62,20 @@ public class ForumParser extends AbstractParser {
 			statement.setString(5, ""); //description
 			statement.setString(6, ""); // rules
 			boolean res = statement.execute();
+			
+			// on set les droits du forum
+			PreparedStatement statementR1 = connect.prepareStatement("INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) "
+					+ "VALUES (2, ?, 0, 21, 0)");
+			PreparedStatement statementR2 = connect.prepareStatement("INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) "
+					+ "VALUES (1, ?, 0, 17, 0)");
+			PreparedStatement statementR3 = connect.prepareStatement("INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) "
+					+ "VALUES (7, ?, 0, 17, 0)");
+			statementR1.setInt(1, getForumId());
+			statementR2.setInt(1, getForumId());
+			statementR3.setInt(1, getForumId());
+			statementR1.execute();
+			statementR2.execute();
+			statementR3.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
