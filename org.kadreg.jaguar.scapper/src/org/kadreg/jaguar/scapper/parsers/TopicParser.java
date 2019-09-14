@@ -65,7 +65,7 @@ public class TopicParser extends AbstractParser {
 	private void convertPost(Element post) {
 		try {
 			String author = post.select("p.author a").text();
-			String authorHref = post.select("p.author a").attr("href");
+			String authorHref = getAuthorUrlFromPost (post);
 			String content = post.select("div.content").html();
 			String date = post.select("p.author").text();
 			String postTitle = post.select("h3.first").text();
@@ -92,6 +92,11 @@ public class TopicParser extends AbstractParser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private String getAuthorUrlFromPost(Element post) {
+		Elements elements = post.select("p.author a");
+		return elements.last().attr("href");
 	}
 
 	private void convert() {

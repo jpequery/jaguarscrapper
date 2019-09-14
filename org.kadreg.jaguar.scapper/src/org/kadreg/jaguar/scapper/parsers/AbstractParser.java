@@ -1,6 +1,8 @@
 package org.kadreg.jaguar.scapper.parsers;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -141,4 +143,20 @@ public abstract class AbstractParser {
 		throw new RuntimeException("Unknown month "+ s);
 	}
 
+	public String getUrlParameter (String urlString, String paramName) {
+		try {
+			URL url = new URL (urlString);
+			String p = paramName + "=";
+			
+			String[] params = url.getQuery().split("&");
+			for (String string : params) {
+				if (string.startsWith(p)) {
+					return string.substring(p.length());
+				}
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
 }
