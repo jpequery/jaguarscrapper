@@ -36,13 +36,14 @@ public class TopicParser extends AbstractParser {
 		
 		
 		if (firstPage) convert ();
-		
+		boolean firstpost = firstPage;
 		// <div class="postbody">
 		//     <p class="author">
 		//     <div class="content">
 		Elements posts = doc.select ("div.postBody");
 		for (Element post : posts) {
-			convertPost (post);			
+			convertPost (post, firstpost);
+			firstpost = false;
 		}
 ;
 		try {
@@ -62,7 +63,7 @@ public class TopicParser extends AbstractParser {
 	}
 
 
-	private void convertPost(Element post) {
+	private void convertPost(Element post, boolean firstpost) {
 		try {
 			String author = post.select("p.author a").text();
 			String authorHref = getAuthorUrlFromPost (post);
@@ -74,17 +75,29 @@ public class TopicParser extends AbstractParser {
 			int authorId = AuthorParser.getInstance().author (author, base + authorHref);
 			int postId = Integer.valueOf(post.parent().parent().attr("id").substring(1)); // id du post, suppression d'un p devant
 			Connection jdbc = getJDBCConnection();
-			PreparedStatement statement = jdbc.prepareStatement("INSERT INTO phpbb_posts(post_id, topic_id, forum_id, poster_id, post_time, post_subject, post_text) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?)");
+			PreparedStatement statement = jdbc.prepareStatement("INSERT INTO phpbb_posts(post_visibility, post_id, topic_id, forum_id, poster_id, post_time, post_subject, post_text, post_username) "
+					+ "VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setInt(1, postId);
 			statement.setInt(2 , getTopicId());
 			statement.setInt(3, ((ForumParser)parentParser).getForumId());
 			statement.setInt(4, authorId);
 			statement.setLong(5, 0);
 			statement.setString(6, postTitle);
-			statement.setString(7, content); 
-	
+			statement.setString(7, content); 	
+			statement.setString(8, author); 	
 			statement.execute();
+			
+			if (firstpost) {
+				PreparedStatement statementTopic = jdbc.prepareStatement("UPDATE phpbb_topics "
+						+ "SET topic_poster=?, topic_first_post_id=?, topic_first_poster_name=? "
+						+ "WHERE topic_id=?");
+				statementTopic.setInt(1, authorId);
+				statementTopic.setInt(2, postId);
+				statementTopic.setString(3, author);
+				statementTopic.setInt(4, getTopicId());
+				statementTopic.execute();
+			}
+			
 //			System.out.println(padding + "  post de " + author);
 		} catch (SQLException e) {
 			e.printStackTrace();			
@@ -112,8 +125,8 @@ public class TopicParser extends AbstractParser {
 		
 		try {
 			Connection connect = getJDBCConnection();
-			PreparedStatement statement = connect.prepareStatement("INSERT INTO phpbb_topics (forum_id, topic_id, topic_title, topic_poster, topic_time) "
-					+ "VALUES (?, ?, ?, ?, ?)");
+			PreparedStatement statement = connect.prepareStatement("INSERT INTO phpbb_topics (topic_visibility, forum_id, topic_id, topic_title, topic_poster, topic_time) "
+					+ "VALUES (1, ?, ?, ?, ?, ?)");
 			statement.setInt(1, Integer.valueOf(forumParser.getForumId()));
 			statement.setInt(2, topicId);
 			statement.setString(3, topicName);

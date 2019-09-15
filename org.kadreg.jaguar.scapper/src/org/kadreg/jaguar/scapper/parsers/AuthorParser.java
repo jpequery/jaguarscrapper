@@ -58,7 +58,7 @@ public class AuthorParser extends AbstractParser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return 0;
+		return userId;
 	}
 
 	private Map<String, String> parseUsersDetails(Element element) {
@@ -93,8 +93,8 @@ public class AuthorParser extends AbstractParser {
 		if (users.get(author) == null) {
 			// parsing de l'auteur
 			try {
-				parse (author, authorHref);
-				users.put(author, 0);
+				int id = parse (author, authorHref);
+				users.put(author, id);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
