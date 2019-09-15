@@ -71,7 +71,7 @@ public class TopicParser extends AbstractParser {
 			String date = post.select("p.author").text();
 			String postTitle = post.select("h3.first").text();
 			date = date.substring(date.indexOf('»') + 2);
-			java.util.Date sqlDate = normalizeDate (date);
+			java.sql.Date sqlDate = normalizeDate (date);
 			int authorId = AuthorParser.getInstance().author (author, base + authorHref);
 			int postId = Integer.valueOf(post.parent().parent().attr("id").substring(1)); // id du post, suppression d'un p devant
 			Connection jdbc = getJDBCConnection();
@@ -81,12 +81,14 @@ public class TopicParser extends AbstractParser {
 			statement.setInt(2 , getTopicId());
 			statement.setInt(3, ((ForumParser)parentParser).getForumId());
 			statement.setInt(4, authorId);
-			statement.setLong(5, 0);
+			statement.setLong(5, sqlDate.getTime());
 			statement.setString(6, postTitle);
 			statement.setString(7, content); 	
-			statement.setString(8, author); 	
+			statement.setString(8, author); 
+
 			statement.execute();
 			
+//			increment(jdbc, "phpbb_users", "user_id", authorId, "user_posts");
 			if (firstpost) {
 				PreparedStatement statementFirstTopic = jdbc.prepareStatement("UPDATE phpbb_topics "
 						+ "SET topic_poster=?, topic_first_post_id=?, topic_first_poster_name=? "

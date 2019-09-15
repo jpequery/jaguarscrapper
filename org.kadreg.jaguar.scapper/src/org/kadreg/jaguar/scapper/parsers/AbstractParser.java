@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,7 +93,7 @@ public abstract class AbstractParser {
 		}
 	}
 	
-	protected java.util.Date normalizeDate(String date) throws ParseException {
+	protected java.sql.Date normalizeDate(String date) throws ParseException {
 		try {
 		LocalDate today = LocalDate.now();
 		LocalDate yesterday = today.minusDays(1);
@@ -120,7 +120,7 @@ public abstract class AbstractParser {
 		int day = Integer.valueOf(date.substring(0, 2));
 		int month = getMonthNumber (date.substring(3, 7));
 		int year = Integer.valueOf(date.substring(7+(month==6||month==7?1:0), 11+(month==6||month==7?1:0)));
-		Timestamp result = new Timestamp(year, month, day, heures, minutes, 0, 0);
+		Timestamp result = new Timestamp(year-1900, month, day, heures, minutes, 0, 0);
 		return new java.sql.Date (result.toInstant().getEpochSecond());
 		} catch (NumberFormatException e) {
 			throw e;
@@ -158,5 +158,15 @@ public abstract class AbstractParser {
 			e.printStackTrace();
 		}
 		return "";
+	}
+	
+	public void increment (java.sql.Connection jdbc, String tableName, String key, int keyValue, String field) throws SQLException {
+		PreparedStatement statement = jdbc.prepareStatement("Update ? Set ?=?-1 where ?=?");
+		statement.setString(1, tableName);
+		statement.setString(2, field);
+		statement.setString(3, field);
+		statement.setString(4, key);
+		statement.setInt(5, keyValue);
+		statement.execute();
 	}
 }
