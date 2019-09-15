@@ -34,6 +34,5 @@ verrsion 3.0 : https://ftp.phpbb-fr.com/cdd/phpbb3/_screens/doc_table/?table=php
 
 Pour faire apparaitre le forum : forum_type à 1, forum_flags à 48 (ok pour la racine). Voir avec les ACL.
 
-![etat actuel](https://i.imgur.com/dL7h277.png "etat actuel")
 ![etat actuel](https://i.imgur.com/vUY5SVE.png "etat actuel")
 
