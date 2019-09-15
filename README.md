@@ -10,11 +10,11 @@ TODO:
      - forum  (partial, manque ACL, table phpbb_acl_groups)
      - topic (partial)
      - post (partial)
-     - user (ils sont reconnus, mais manque l'injection du user_id)
+     - user (ils sont reconnus, reste les details, age, occupation...)
      - smiley
      - group
 - gestion des groupes, reconstruire la liste des membres de l'asso
-
+- gestion des utilisateurs sans compte existant (cf kaprice)
 
 DONE:
 - remettre des dates utilisables, pas de hier, remettre les années 2019 (a optimiser)
@@ -25,7 +25,7 @@ DONE:
 - identification des comptes, parsing de la page, affectation d'un post au compte
 - connection à la base de données MySql destination
 - gestion d'erreur : topic inexistant mais encore référencé, timeout, reprise sur erreur
-
+- utilisation du visibility
 
 Note technique sur la connection à distance : https://stackoverflow.com/questions/1559955/host-xxx-xx-xxx-xxx-is-not-allowed-to-connect-to-this-mysql-server
 
@@ -34,4 +34,5 @@ verrsion 3.0 : https://ftp.phpbb-fr.com/cdd/phpbb3/_screens/doc_table/?table=php
 
 Pour faire apparaitre le forum : forum_type à 1, forum_flags à 48 (ok pour la racine). Voir avec les ACL.
 
-![etat actuel](https://i.imgur.com/dL7h277.png "etat actuel")
+![etat actuel](https://i.imgur.com/vUY5SVE.png "etat actuel")
+
