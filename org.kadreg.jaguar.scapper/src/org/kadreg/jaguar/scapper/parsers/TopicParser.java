@@ -42,7 +42,7 @@ public class TopicParser extends AbstractParser {
 		//     <div class="content">
 		Elements posts = doc.select ("div.postBody");
 		for (Element post : posts) {
-			convertPost (post, firstpost);
+			convertPost (post, firstpost, posts.last().equals(post));
 			firstpost = false;
 		}
 ;
@@ -63,7 +63,7 @@ public class TopicParser extends AbstractParser {
 	}
 
 
-	private void convertPost(Element post, boolean firstpost) {
+	private void convertPost(Element post, boolean firstpost, boolean lastpost) {
 		try {
 			String author = post.select("p.author a").text();
 			String authorHref = getAuthorUrlFromPost (post);
@@ -88,17 +88,26 @@ public class TopicParser extends AbstractParser {
 			statement.execute();
 			
 			if (firstpost) {
-				PreparedStatement statementTopic = jdbc.prepareStatement("UPDATE phpbb_topics "
+				PreparedStatement statementFirstTopic = jdbc.prepareStatement("UPDATE phpbb_topics "
 						+ "SET topic_poster=?, topic_first_post_id=?, topic_first_poster_name=? "
 						+ "WHERE topic_id=?");
-				statementTopic.setInt(1, authorId);
-				statementTopic.setInt(2, postId);
-				statementTopic.setString(3, author);
-				statementTopic.setInt(4, getTopicId());
-				statementTopic.execute();
+				statementFirstTopic.setInt(1, authorId);
+				statementFirstTopic.setInt(2, postId);
+				statementFirstTopic.setString(3, author);
+				statementFirstTopic.setInt(4, getTopicId());
+				statementFirstTopic.execute();
 			}
-			
-//			System.out.println(padding + "  post de " + author);
+			if (lastpost) {
+				PreparedStatement statementLastTopic = jdbc.prepareStatement("UPDATE phpbb_topics "
+						+ "SET topic_last_poster_id=?, topic_last_poster_name=?, topic_last_post_id=?, topic_last_post_subject=? "
+						+ "WHERE topic_id=?");
+				statementLastTopic.setInt(1, authorId);
+				statementLastTopic.setString(2, author);
+				statementLastTopic.setInt(3, postId);
+				statementLastTopic.setString(4, "");
+				statementLastTopic.setInt(5, getTopicId());	
+				statementLastTopic.execute();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();			
 		} catch (ParseException e) {
