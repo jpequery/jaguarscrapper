@@ -6,6 +6,7 @@ import java.net.URL;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -119,7 +120,7 @@ public abstract class AbstractParser {
 		
 		int day = Integer.valueOf(date.substring(0, 2));
 		int month = getMonthNumber (date.substring(3, 7));
-		int year = Integer.valueOf(date.substring(7+(month==6||month==7?1:0), 11+(month==6||month==7?1:0)));
+		int year = Integer.valueOf(date.substring(7+(month==5||month==6?1:0), 11+(month==5||month==6?1:0)));
 		Timestamp result = new Timestamp(year-1900, month, day, heures, minutes, 0, 0);
 		return new java.sql.Date (result.toInstant().getEpochSecond());
 		} catch (NumberFormatException e) {
@@ -128,18 +129,18 @@ public abstract class AbstractParser {
 	}
 
 	private int getMonthNumber(String s) {
-		if (s.startsWith("Jan")) return 1;
-		if (s.startsWith("Fév")) return 2;
-		if (s.startsWith("Mar")) return 3;
-		if (s.startsWith("Avr")) return 4;
-		if (s.startsWith("Mai")) return 5;
-		if (s.startsWith("Juin")) return 6;
-		if (s.startsWith("Juil")) return 7;
-		if (s.startsWith("Aoû")) return 8;
-		if (s.startsWith("Sep")) return 9;
-		if (s.startsWith("Oct")) return 10;
-		if (s.startsWith("Nov")) return 11;
-		if (s.startsWith("Déc")) return 12;
+		if (s.startsWith("Jan")) return 0;
+		if (s.startsWith("Fév")) return 1;
+		if (s.startsWith("Mar")) return 2;
+		if (s.startsWith("Avr")) return 3;
+		if (s.startsWith("Mai")) return 4;
+		if (s.startsWith("Juin")) return 5;
+		if (s.startsWith("Juil")) return 6;
+		if (s.startsWith("Aoû")) return 7;
+		if (s.startsWith("Sep")) return 8;
+		if (s.startsWith("Oct")) return 9;
+		if (s.startsWith("Nov")) return 10;
+		if (s.startsWith("Déc")) return 11;
 		throw new RuntimeException("Unknown month "+ s);
 	}
 
@@ -161,12 +162,8 @@ public abstract class AbstractParser {
 	}
 	
 	public void increment (java.sql.Connection jdbc, String tableName, String key, int keyValue, String field) throws SQLException {
-		PreparedStatement statement = jdbc.prepareStatement("Update ? Set ?=?-1 where ?=?");
-		statement.setString(1, tableName);
-		statement.setString(2, field);
-		statement.setString(3, field);
-		statement.setString(4, key);
-		statement.setInt(5, keyValue);
-		statement.execute();
+		String request = "Update "+ tableName +" Set "+field+"="+field+"+1 where "+key+"="+keyValue;
+		Statement statement = jdbc.createStatement();
+		statement.execute(request);
 	}
 }
