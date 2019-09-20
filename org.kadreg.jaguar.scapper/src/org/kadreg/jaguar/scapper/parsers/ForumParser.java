@@ -12,6 +12,8 @@ import org.jsoup.select.Elements;
 
 public class ForumParser extends AbstractParser {
 
+	private static final String DÉCONNEXION = "Déconnexion ";
+
 	// the document of the parsed page
 	private Document doc;
 
@@ -83,7 +85,10 @@ public class ForumParser extends AbstractParser {
 	}
 
 	public void parse() throws IOException {
-		if (firstPage) convert();
+		if (firstPage) {
+			displayLoginStatus ();
+			convert();
+		}
 		Elements forumALinkElement = doc.select("a.forumtitle");
 		for (org.jsoup.nodes.Element element : forumALinkElement) {
 			String href = element.attr("href");
@@ -113,6 +118,17 @@ public class ForumParser extends AbstractParser {
 		} catch (BadScrappingException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void displayLoginStatus() {
+		Elements elements = doc.select ("div#navbar a");
+		for (Element element : elements) {
+			if (element.attr("title").startsWith(DÉCONNEXION)) {
+				System.out.println("Connecté en tant que " + element.attr("title").substring(DÉCONNEXION.length()) );
+				return;
+			}
+		}
+		System.out.println("Mode Déconnecté...."); 
 	}
 
 	public int getForumId() {
