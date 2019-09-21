@@ -103,13 +103,14 @@ public class TopicParser extends AbstractParser {
 			}
 			if (lastpost) {
 				PreparedStatement statementLastTopic = jdbc.prepareStatement("UPDATE phpbb_topics "
-						+ "SET topic_last_poster_id=?, topic_last_poster_name=?, topic_last_post_id=?, topic_last_post_subject=? "
+						+ "SET topic_last_poster_id=?, topic_last_poster_name=?, topic_last_post_id=?, topic_last_post_subject=?, topic_last_post_time=? "
 						+ "WHERE topic_id=?");
 				statementLastTopic.setInt(1, authorId);
 				statementLastTopic.setString(2, author);
 				statementLastTopic.setInt(3, postId);
 				statementLastTopic.setString(4, "");
-				statementLastTopic.setInt(5, getTopicId());	
+				statementLastTopic.setLong(5, sqlDate.getTime());
+				statementLastTopic.setInt(6, getTopicId());	
 				statementLastTopic.execute();
 			}
 		} catch (SQLException e) {
