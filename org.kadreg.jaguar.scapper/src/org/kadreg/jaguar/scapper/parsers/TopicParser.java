@@ -65,14 +65,16 @@ public class TopicParser extends AbstractParser {
 
 	private void convertPost(Element post, boolean firstpost, boolean lastpost) {
 		try {
-			String author = post.select("p.author a").text();
+			String author = getAuthorFromPost (post);
 			String authorHref = getAuthorUrlFromPost (post);
 			String content = post.select("div.content").html();
 			String date = post.select("p.author").text();
 			String postTitle = post.select("h3.first").text();
 			date = date.substring(date.indexOf('»') + 2);
 			java.sql.Date sqlDate = normalizeDate (date);
-			int authorId = AuthorParser.getInstance().author (author, base + authorHref);
+			int authorId = 0;
+			if (authorHref != null)
+				authorId = AuthorParser.getInstance().author (author, base + authorHref);
 			int postId = Integer.valueOf(post.parent().parent().attr("id").substring(1)); // id du post, suppression d'un p devant
 			Connection jdbc = getJDBCConnection();
 			PreparedStatement statement = jdbc.prepareStatement("INSERT INTO phpbb_posts(post_visibility, post_id, topic_id, forum_id, poster_id, post_time, post_subject, post_text, post_username) "
@@ -118,9 +120,28 @@ public class TopicParser extends AbstractParser {
 		}
 	}
 
-	private String getAuthorUrlFromPost(Element post) {
+	private String getAuthorFromPost(Element post) {
 		Elements elements = post.select("p.author a");
-		return elements.last().attr("href");
+		if (elements.size() == 2) return elements.text();
+		
+		// cas de l'anonyme nommé
+		Elements elements2 = post.select("p.author strong");
+		return elements2.text();
+	}
+
+	private String getAuthorUrlFromPost(Element post) {
+		String result = null;
+		Elements elements = post.select("p.author a");
+		// il y a deux cas: utilisateur enregistré ou invité. 
+		// si utilisateur invité, on retourne null
+		if (elements.size() == 2) {
+			result = elements.last().attr("href");
+		} else if (elements.size() == 1) {
+			result = null;
+		} else {
+			throw new RuntimeException("Error while parsing user URL" + post);
+		}
+		return result;
 	}
 
 	private void convert() {

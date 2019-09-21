@@ -10,6 +10,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
@@ -96,14 +98,14 @@ public abstract class AbstractParser {
 	
 	protected java.sql.Date normalizeDate(String date) throws ParseException {
 		try {
-		LocalDate today = LocalDate.now();
-		LocalDate yesterday = today.minusDays(1);
+		LocalDateTime today = LocalDateTime.now();
+		LocalDateTime yesterday = today.minusDays(1);
 		int indexDeuxPoint = date.indexOf(':');
 		
 		if (date.startsWith("il y a ")) {
 			int num = Integer.valueOf(date.substring(7, 9));
-			LocalDate t = today.minus(num, ChronoUnit.MINUTES);
-			return new java.sql.Date (t.toEpochDay());
+			LocalDateTime t = today.minus(num, ChronoUnit.MINUTES);
+			return new java.sql.Date (t.toEpochSecond(ZoneOffset.ofHours(+1)));
 		}
 		
 		int minutes = Integer.valueOf(date.substring(indexDeuxPoint+1));
