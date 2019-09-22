@@ -2,8 +2,10 @@ package org.kadreg.jaguar.scapper.parsers;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +32,7 @@ public class AuthorParser extends AbstractParser {
 	}
 
 	
-	public int parse (String username, String authorHref) throws IOException {
+	public int parse (String username, String authorHref) throws IOException, ParseException {
 		Document doc = getDocument(authorHref);
 		String strUserId = getUrlParameter (authorHref, "u");
 		if (strUserId == "") throw new RuntimeException("error parsing href " + authorHref);
@@ -42,17 +44,22 @@ public class AuthorParser extends AbstractParser {
 		String age = details.get("Age");
 		String emploi = details.get ("Emploi");
 		String interets = details.get ("centres d'intérêts");
+
+		
+		Map<String, String> statistiques = parseUsersDetails(doc.select("div.column2 dl.details").first());
+		Date inscriptionDate = normalizeDate(statistiques.get("Inscription"));
 		
 		String signature = doc.select("div.postbody div.signature").text();
 		Connection jdbc = getJDBCConnection();
 		try {
-			PreparedStatement statement = jdbc.prepareStatement("INSERT INTO phpbb_users (user_id, username, username_clean, user_permissions, user_sig) "+
-					"VALUES (?, ?, ?, ?, ?)");
+			PreparedStatement statement = jdbc.prepareStatement("INSERT INTO phpbb_users (user_id, username, username_clean, user_permissions, user_sig, user_regdate) "+
+					"VALUES (?, ?, ?, ?, ?, ?)");
 			statement.setInt(1, userId);
 			statement.setString(2, username);
 			statement.setString(3, cleanUserName (username));
 			statement.setString(4, "");
 			statement.setString(5, signature);
+			statement.setLong(6, inscriptionDate.getTime());
 			statement.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -100,6 +107,9 @@ public class AuthorParser extends AbstractParser {
 					users.put(author, id);
 				}
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

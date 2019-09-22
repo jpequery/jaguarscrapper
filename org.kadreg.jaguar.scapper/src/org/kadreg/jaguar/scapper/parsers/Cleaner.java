@@ -29,8 +29,8 @@ public class Cleaner extends AbstractParser {
 			
 			statement.executeBatch();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new IOException("unable to clean up databases");
 		}
 	}
 
